@@ -14,6 +14,8 @@ BOT_NAME = 'deremas_data'
 SPIDER_MODULES = ['deremas_data.spiders']
 NEWSPIDER_MODULE = 'deremas_data.spiders'
 FEED_EXPORT_ENCODING = 'utf-8'
+LOG_LEVEL = 'INFO'
+LOG_FILE = './spider.log'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'deremas_data (+http://www.yourdomain.com)'
