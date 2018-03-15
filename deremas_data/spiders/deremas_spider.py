@@ -2,6 +2,8 @@
 from scrapy import Request
 from scrapy import Spider
 
+import deremas_data.spiders.extract_util as util
+
 
 class DeremasSpider(Spider):
     name = 'deremas'
@@ -22,32 +24,10 @@ class DeremasSpider(Spider):
             yield Request(next_page, callback=self.parse)
 
     def parse_idol(self, response):
-        def is_idol_page(res):
-            same_idol_box_label = res.xpath(
-                '//*[@id="content_1"]/text()'
-            ).extract_first()
-            if isinstance(same_idol_box_label, str):
-                return '同名アイドル' == same_idol_box_label.strip()
-            else:
-                return False
-
-        def extract_idol_name(res):
-            return res.xpath(
-                '//*[@id="page-header-inner"]/div[1]/div/h2/text()'
-            ).extract_first().strip()
-
-        def extract_lines(res):
-            lines = {}
-            lines['before_training'] = res.xpath(
-                '//*[@id="content_block_13"]/tbody/tr[*]/td[2]/text()'
-            ).extract()
-            lines['after_training'] = res.xpath(
-                '//*[@id="content_block_24"]/tbody/tr[*]/td[2]/text()'
-            ).extract()
-            return lines
-
-        if is_idol_page(response):
+        profile_block_ids = util.search_block_id(response, 'プロフィール')
+        line_block_ids = util.search_block_id(response, 'セリフ集')
+        if profile_block_ids and line_block_ids:
             yield {
-                'name': extract_idol_name(response),
-                'lines': extract_lines(response)
+                'name': util.extract_card_name(response),
+                'lines': util.extract_lines(response)
             }
