@@ -1,4 +1,8 @@
 # coding: utf-8
+"""情報抽出ユーティリティ."""
+from re import sub
+
+
 LINE_XPATH_TEMPLATE = '//*[@id="{}"]//tbody/tr[*]/td[2]/text()'
 
 
@@ -39,7 +43,37 @@ def extract_card_name(response, data_block_id=None):
             data_block_id)).extract_first()
 
 
+def extract_idol_name(card_name):
+    """アイドル名を抽出する.
+
+    カード名から付属情報を除去してアイドル名にする.
+
+    :param card_name: カードの名前
+    :return: アイドルの名前
+    """
+    return sub(r'\+$', '', sub(r'^［.+?］', '', card_name))
+
+
+def extract_type(response, data_block_id=None):
+    """属性を抽出する.
+
+    :param response: レスポンスオブジェクト
+    :param data_block_id: データブロックのID
+    :return: アイドルの属性
+    """
+    # データブロックIDが指定されて居ない場合は探索をする
+    data_block_id = data_block_id or search_block_id(response, 'データ')[0]
+    return response.xpath(
+        '//*[@id="{}"]//tbody/tr[2]/td[2]/text()'.format(
+            data_block_id)).extract_first()
+
+
 def extract_memorial_episode_lines(response):
+    """思い出エピソードのセリフを抽出する.
+
+    :param response: レスポンスオブジェクト
+    :return: 思い出エピソードのセリフリスト
+    """
     memorial_episode_line_block_ids = search_block_id(
             response, '思い出エピソード')
     if memorial_episode_line_block_ids:
@@ -52,9 +86,20 @@ def extract_memorial_episode_lines(response):
 
 
 def extract_lines(response):
+    """セリフを抽出する.
+
+    特訓前・特訓後・思い出エピソードのセリフを抽出する.
+
+    :return: セリフ情報を保持した辞書オブジェクト
+    """
     line_block_ids = search_block_id(response, 'セリフ集')
 
     def _extract_lines(index):
+        """特訓前後のセリフを抽出する.
+
+        セリフ集ブロックのidが1つだけしかない場合でも
+        同一インタフェースで操作できるようにするための内部関数.
+        """
         if len(line_block_ids) < index + 1:
             return []
         else:
