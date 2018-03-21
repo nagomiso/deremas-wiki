@@ -51,7 +51,11 @@ def extract_idol_name(card_name):
     :param card_name: カードの名前
     :return: アイドルの名前
     """
-    return sub(r'\+$', '', sub(r'^［.+?］', '', card_name))
+    return sub(
+                r'\s*?[\+＋]$',
+                '',
+                sub(r'^\s*?[\[［].+?[］\]]\s*?', '', card_name)
+            )
 
 
 def extract_type(response, data_block_id=None):

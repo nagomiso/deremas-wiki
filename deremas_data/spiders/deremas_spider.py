@@ -6,7 +6,7 @@ from scrapy import Spider
 import deremas_data.spiders.extract_util as util
 
 
-exclude_card_names = {'（アイドル名）'}
+EXCLUDE_CARD_NAMES = {'（アイドル名）'}
 
 
 class DeremasSpider(Spider):
@@ -32,7 +32,7 @@ class DeremasSpider(Spider):
         line_block_ids = util.search_block_id(response, 'セリフ集')
         if profile_block_ids and line_block_ids:
             card_name = util.extract_card_name(response)
-            if card_name not in exclude_card_names:
+            if card_name not in EXCLUDE_CARD_NAMES:
                 idol_name = util.extract_idol_name(card_name)
                 type_name = util.extract_type(response)
                 yield {
