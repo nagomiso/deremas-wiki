@@ -12,7 +12,7 @@ EXCLUDE_CARD_NAMES = {'（アイドル名）'}
 class DeremasSpider(Spider):
     """デレマス情報抽出用Spiderクラス."""
     name = 'deremas'
-    start_urls = ['http://seesaawiki.jp/imascg/l/']
+    start_urls = ['https://seesaawiki.jp/imascg/l/']
 
     def parse(self, response):
         pages = response.xpath(
@@ -27,7 +27,8 @@ class DeremasSpider(Spider):
         if next_page:
             yield Request(next_page, callback=self.parse)
 
-    def parse_idol(self, response):
+    @staticmethod
+    def parse_idol(response):
         profile_block_ids = util.search_block_id(response, 'プロフィール')
         line_block_ids = util.search_block_id(response, 'セリフ集')
         if profile_block_ids and line_block_ids:
