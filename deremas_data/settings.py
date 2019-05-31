@@ -15,7 +15,7 @@ SPIDER_MODULES = ['deremas_data.spiders']
 NEWSPIDER_MODULE = 'deremas_data.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'deremas_data (+http://www.yourdomain.com)'
+USER_AGENT = 'deremas_data (+https://github.com/nagomiso/deremas-wiki)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
