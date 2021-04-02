@@ -11,6 +11,23 @@ Scrapy = "^2.4.1"
 neologdn = "^0.4"
 
 [tool.poetry.dev-dependencies]
+pytest = "^6.2.2"
+black = "^20.8b1"
+flake8 = "^3.9.0"
+mypy = "^0.812"
+isort = "^5.8.0"
+pre-commit = "^2.11.1"
+
+[tool.black]
+line-length = 88
+target-version = ["py38"]
+
+[tool.isort]
+profile = "black"
+include_trailing_comma = true
+line_length = 88
+multi_line_output = 3
+use_parentheses = true
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
