@@ -6,13 +6,13 @@ from re import sub
 
 import neologdn
 
+CIRCLE_PATTERN = (
+    "[\u25cf\u25ef\u20d8\u20dd\u25cc\u25cd"
+    "\u25d9\u26aa\u26ab\u26ac\u274d\u2b55"
+    "\u2b24\u2b58\uffee]"
+)
 
-CIRCLE_PATTERN = '[\u25cf\u25ef\u20d8\u20dd\u25cc\u25cd' \
-                 '\u25d9\u26aa\u26ab\u26ac\u274d\u2b55' \
-                 '\u2b24\u2b58\uffee]'
-
-_normalize_circle_char = partial(
-    sub, pattern=CIRCLE_PATTERN, repl='\u25cb')
+_normalize_circle_char = partial(sub, pattern=CIRCLE_PATTERN, repl="\u25cb")
 
 
 def search_block_id(response, content_name):
@@ -25,10 +25,10 @@ def search_block_id(response, content_name):
     :return: 要素id集合
     """
     block_ids = []
-    for content_id in response.xpath(
-            '//div[@class="user-area"]//div/@id').extract():
+    for content_id in response.xpath('//div[@class="user-area"]//div/@id').extract():
         extracted_content_name = response.xpath(
-            f'//*[@id="{content_id}"]//text()').extract_first()
+            f'//*[@id="{content_id}"]//text()'
+        ).extract_first()
         if isinstance(extracted_content_name, str):
             if extracted_content_name.strip() == content_name:
                 block_ids.append(content_id)
@@ -45,7 +45,7 @@ def extract_card_name(response, data_block_id=None):
     :return: カードの名前
     """
     # データブロックIDが指定されて居ない場合は探索をする
-    data_block_id = data_block_id or search_block_id(response, 'データ')[0]
+    data_block_id = data_block_id or search_block_id(response, "データ")[0]
     return response.xpath(
         f'//*[@id="{data_block_id}"]//tbody/tr[1]/td[1]/text()'
     ).extract_first()
@@ -59,8 +59,7 @@ def extract_idol_name(card_name):
     :param card_name: カードの名前
     :return: アイドルの名前
     """
-    return sub(
-        r'\s*?[\+＋]$', '', sub(r'^\s*?[\[［].+?[］\]]\s*?', '', card_name))
+    return sub(r"\s*?[\+＋]$", "", sub(r"^\s*?[\[［].+?[］\]]\s*?", "", card_name))
 
 
 def extract_type(response, data_block_id=None):
@@ -71,7 +70,7 @@ def extract_type(response, data_block_id=None):
     :return: アイドルの属性
     """
     # データブロックIDが指定されて居ない場合は探索をする
-    data_block_id = data_block_id or search_block_id(response, 'データ')[0]
+    data_block_id = data_block_id or search_block_id(response, "データ")[0]
     return response.xpath(
         f'//*[@id="{data_block_id}"]//tbody/tr[2]/td[2]/text()'
     ).extract_first()
@@ -83,12 +82,10 @@ def extract_memorial_episode_lines(response):
     :param response: レスポンスオブジェクト
     :return: 思い出エピソードのセリフリスト
     """
-    memorial_episode_line_block_ids = search_block_id(
-            response, '思い出エピソード')
+    memorial_episode_line_block_ids = search_block_id(response, "思い出エピソード")
     if memorial_episode_line_block_ids:
         return response.xpath(
-            f'//div[@id="{memorial_episode_line_block_ids[0]}"]/'
-            '/tbody/tr/td/text()'
+            f'//div[@id="{memorial_episode_line_block_ids[0]}"]/' "/tbody/tr/td/text()"
         ).extract()
     else:
         return []
@@ -101,7 +98,7 @@ def normalize_text(text: str) -> str:
     :return: 正規化後テキスト
     """
     normalized_text = neologdn.normalize(text)
-    return _normalize_circle_char(string=normalized_text)
+    return str(_normalize_circle_char(string=normalized_text))
 
 
 def normalize_texts(texts: typing.Collection[str]) -> typing.Collection[str]:
@@ -120,7 +117,7 @@ def extract_lines(response):
 
     :return: セリフ情報を保持した辞書オブジェクト
     """
-    line_block_ids = search_block_id(response, 'セリフ集')
+    line_block_ids = search_block_id(response, "セリフ集")
 
     def _extract_lines(index):
         """特訓前後のセリフを抽出する.
@@ -140,14 +137,14 @@ def extract_lines(response):
     memorial_episode_lines = extract_memorial_episode_lines(response)
 
     return {
-        'raw': {
-            'before_training': before_training_lines,
-            'after_training': after_training_lines,
-            'memorial_episode': memorial_episode_lines,
+        "raw": {
+            "before_training": before_training_lines,
+            "after_training": after_training_lines,
+            "memorial_episode": memorial_episode_lines,
         },
-        'normalized': {
-            'before_training': normalize_texts(before_training_lines),
-            'after_training': normalize_texts(after_training_lines),
-            'memorial_episode': normalize_texts(memorial_episode_lines),
-        }
+        "normalized": {
+            "before_training": normalize_texts(before_training_lines),
+            "after_training": normalize_texts(after_training_lines),
+            "memorial_episode": normalize_texts(memorial_episode_lines),
+        },
     }
