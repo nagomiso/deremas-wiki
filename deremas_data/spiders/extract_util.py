@@ -9,7 +9,7 @@ import neologdn
 CIRCLE_PATTERN = (
     "[\u25cf\u25ef\u20d8\u20dd\u25cc\u25cd"
     "\u25d9\u26aa\u26ab\u26ac\u274d\u2b55"
-    "\u2b24\u2b58\uffee]"
+    "\u2b24\u2b58\u3007\uffee]"
 )
 
 _normalize_circle_char = partial(sub, pattern=CIRCLE_PATTERN, repl="\u25cb")
